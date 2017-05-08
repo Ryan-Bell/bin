@@ -1,5 +1,3 @@
-# Dylan's Scripts
-
 ### bar
 
 Simple lemonbar that displays the date and time.
