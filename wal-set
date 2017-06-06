@@ -18,18 +18,12 @@ reload_dunst() {
             -geometry "${DUNST_SIZE:-300x30-40+40}" &
 }
 
-set_bar() {
-    pkill bar
-    bar "$color15" "$color0" 2>/dev/null &
-}
-
 set_scss() {
     sassc --style expanded "${HOME}/startpage/scss/style.scss" > "${HOME}/startpage/style.css"
 }
 
 main() {
     reload_dunst &
-    set_bar &
     set_scss &
 }
 
