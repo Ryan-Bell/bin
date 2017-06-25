@@ -6,6 +6,8 @@
 #
 # Depends on: imagemagick, libnotify (patched with id support)
 
+((!$#)) && { import -window root -gravity north "/tmp/screen.png"; exit 1; }
+
 # Screenshot directory
 scr_dir="${HOME}/Pictures/Screenshots"
 mkdir -p "$scr_dir" || { printf "%s\n" "Error: Couldn't create screenshot directory"; exit; }
