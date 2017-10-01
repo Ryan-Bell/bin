@@ -1,0 +1,3 @@
+filename=$(echo $1 | cut -f 1 -d '.')
+mkdir "$filename"
+mv "$1" "$filename"
