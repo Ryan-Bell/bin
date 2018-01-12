@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-
+# Adjusted to just use the background image since pixelating takes time
 icon="$HOME/Pictures/lock.png"
-tmpbg='/tmp/screen.png'
+current_wallpaper="$(< ~/.cache/wal/wal)"
+lock_image="$HOME/Pictures/lock_image.png"
 
-scr
-convert "$tmpbg" -scale 10% -scale 1000% "$tmpbg"
-convert "$tmpbg" "$icon" -gravity West -composite -matte "$tmpbg"
-i3lock -u -i "$tmpbg"
+convert "$current_wallpaper" "$icon" -gravity center -composite -matte "$lock_image"
+i3lock -u -t -i "$lock_image"
