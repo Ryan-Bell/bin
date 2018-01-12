@@ -6,9 +6,6 @@
 #
 # Depends on: imagemagick, libnotify (patched with id support)
 
-# previously used for blurred background
-# ((!$#)) && { import -window root -gravity north "/tmp/screen.png"; exit 1; }
-
 # Screenshot directory
 scr_dir="${HOME}/Pictures/Screenshots"
 mkdir -p "$scr_dir" || { printf "%s\n" "Error: Couldn't create screenshot directory"; exit; }
@@ -23,10 +20,8 @@ mkdir -p "${scr_dir}/${date}"
 # Name the screenshot
 scr="${scr_dir}/${date}/${date}-${time}.png"
 
-# Send the notification
-# -r needs patched libnotify-id to replace existing notifications
-#notify-send -r 111 "Saved screenshot as ${scr/*\/}"
-
-notify-send "Saved screenshot as ${scr/*\/}"
+# The '-r' flag is from a patched version of 'libnotify'.
+# '-r' lets you replace notifications using the same id.
+notify-send -r 111 "Saved screenshot as ${scr/*\/}"
 
 import -window root -gravity north "$scr"
