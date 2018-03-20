@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Toggles audio output between headphones and HDMI (for receiver)
+#
+# Created by Ryan Bell
+#
+# Depends on: PulseAudio
+
+# Get the active profile of the first card or exit
+current_profile_0_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+' || exit 1)"
+
+# toggle two cards based on current setting (only works if other card is disabled)
+if [[ "$current_profile_0_setting" = off ]]; then
+	# enable hdmi 7.1 (receiver/speakers)
+	pactl set-card-profile 0 output:hdmi-surround71-extra1
+	pactl set-card-profile 1 off
+else
+	# enable Analog Stereo Duplex (headset + mic)
+	pactl set-card-profile 1 output:analog-stereo+input:analog-stereo
+	pactl set-card-profile 0 off
+fi
+
+echo -n "Changing output from $current_profile_0_setting "
+current_profile_0_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+')"
+echo "to $current_profile_0_setting"
