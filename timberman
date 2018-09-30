@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# Randomly presses left, right, and enter keys to grind out acheivements for Timberman
+#
+# Created by Ryan Bell
+#
+# Depends on: xdotool
+WID=`xdotool search "Timberman" | tail -n 1`; xdotool windowactivate --sync $WID; 
+WACT=$WID
+while [ $WID == $WACT ]
+do
+	case "$(( RANDOM % 3 ))" in
+	"0")  
+		xdotool key --clearmodifiers Left
+		;;
+	"1")  
+		xdotool key --clearmodifiers Right
+		;;
+	"2")  
+		xdotool key --clearmodifiers Return
+		;;
+	esac
+	WACT=`xdotool getactivewindow`
+done
