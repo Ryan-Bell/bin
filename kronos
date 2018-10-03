@@ -1,0 +1,29 @@
+#!/bin/bash
+# depends on jq
+# TODO(ryan) posix compliant
+# TODO(ryan) handle incorrect login
+# TODO(ryan) remove need for cookies.txt
+
+printf "Username: "
+read USERNAME
+printf "\n"
+# breaking with CTRL+C will leave terminal broken
+stty -echo
+printf "Password: "
+read PASSWORD
+stty echo
+printf "\n"
+
+`wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S  --method POST \
+	--header 'cache-control: no-cache' \
+	- "https://fastapps.rit.edu/kronosTimecard/login?username=${USERNAME}&password=${PASSWORD}" 2>&1`
+
+employeeid=`wget --load-cookies cookies.txt -qO- \
+	"https://fastapps.rit.edu/kronosTimecard/rest/employeebyusername/${USERNAME}" | jq -r '.list[0].employeeid'`
+
+echo "$employeeid"
+
+results=`wget --load-cookies cookies.txt -qO- \
+	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/2018-09-28/2018-10-11" | jq .punchlist`
+
+echo "$results"
