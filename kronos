@@ -6,7 +6,6 @@
 
 printf "Username: "
 read USERNAME
-printf "\n"
 # breaking with CTRL+C will leave terminal broken
 stty -echo
 printf "Password: "
@@ -24,6 +23,8 @@ employeeid=`wget --load-cookies cookies.txt -qO- \
 echo "$employeeid"
 
 results=`wget --load-cookies cookies.txt -qO- \
-	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/2018-09-28/2018-10-11" | jq .punchlist`
-
+	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/2018-09-28/2018-10-11" | jq '.punchlist[] | {applydate: .applydate, duration: .duration, intime: .in_datetime, outtime: .out_datetime}'`
+#applydate - date of punch
+#duration - time in seconds
+#in_datetime - date --date @${in_datetime} (without last 2 0s for datetime
 echo "$results"
