@@ -3,6 +3,7 @@
 # TODO(ryan) posix compliant
 # TODO(ryan) handle incorrect login
 # TODO(ryan) remove need for cookies.txt
+# TODO(ryan) command line arg that accepts username
 
 printf "Username: "
 read USERNAME
@@ -13,18 +14,49 @@ read PASSWORD
 stty echo
 printf "\n"
 
+convertsecs() {
+ ((h=$1/3600))
+ ((m=($1%3600)/60))
+ printf "%dh %02dm\n" $h $m
+}
+
+function print_header {
+	printf "%-10s %10s %10s %s\n" "Date" "Duration" "InTime" "OutTime"
+}
+
+#applydate - date of punch
+#duration - time in seconds
+#in_datetime - date --date @${in_datetime} (without last 2 0s for datetime)
+function print_row {
+	printf "%10s %10s %10s %s\n" "$1" "$2" "$3" "$4"
+}
+
+function parse_row {
+	while read data; do
+		#TODO(ryan) is echo needed?
+		applydate=`echo "$data" | jq -r '.applydate'`;
+		duration=`echo "$data" | jq -r '.duration'`;
+		duration=`convertsecs "$duration"`
+		intime=`echo "$data" | jq -r '.intime' | sed 's/\(.*\).../\1/'`;
+		intime=`date --date @${intime}`
+		outtime=`echo "$data" | jq -r '.outtime' | sed 's/\(.*\).../\1/'`;
+		outtime=`date --date @${outtime}`
+		print_row "$applydate" "$duration" "$intime" "$outtime"
+	done
+}
+
 `wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S  --method POST \
 	--header 'cache-control: no-cache' \
 	- "https://fastapps.rit.edu/kronosTimecard/login?username=${USERNAME}&password=${PASSWORD}" 2>&1`
 
 employeeid=`wget --load-cookies cookies.txt -qO- \
-	"https://fastapps.rit.edu/kronosTimecard/rest/employeebyusername/${USERNAME}" | jq -r '.list[0].employeeid'`
+	"https://fastapps.rit.edu/kronosTimecard/rest/employeebyusername/${USERNAME}" \
+	| jq -r '.list[0].employeeid'`
 
-echo "$employeeid"
+print_header
 
-results=`wget --load-cookies cookies.txt -qO- \
-	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/2018-09-28/2018-10-11" | jq '.punchlist[] | {applydate: .applydate, duration: .duration, intime: .in_datetime, outtime: .out_datetime}'`
-#applydate - date of punch
-#duration - time in seconds
-#in_datetime - date --date @${in_datetime} (without last 2 0s for datetime
-echo "$results"
+wget --load-cookies cookies.txt -qO- \
+	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/2018-09-28/2018-10-11" \
+	| jq --compact-output '.punchlist[] | {applydate: .applydate, duration: .duration, intime: .in_datetime, outtime: .out_datetime}' | parse_row
+
+
