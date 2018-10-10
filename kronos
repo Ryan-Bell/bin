@@ -1,62 +1,89 @@
-#!/bin/bash
+#!/bin/sh
 # depends on jq
-# TODO(ryan) posix compliant
 # TODO(ryan) handle incorrect login
-# TODO(ryan) remove need for cookies.txt
-# TODO(ryan) command line arg that accepts username
+# TODO(ryan) no such file bug
+# TODO(ryan) totals for days option?
+# TODO(ryan) usage function
 
-printf "Username: "
-read USERNAME
+usage(){
+	echo "TODO here"
+}
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-u | --username ) shift
+			USERNAME=$1
+			;;
+		-h | --help )
+			usage
+			exit
+			;;
+		* )
+			usage
+			exit 1
+	esac
+	shift
+done
+
+if [ "$USERNAME" = "" ]; then
+	printf "Username: "
+	read -r USERNAME
+fi
+
 # breaking with CTRL+C will leave terminal broken
 stty -echo
 printf "Password: "
-read PASSWORD
+read -r PASSWORD
 stty echo
-printf "\n"
+printf "\\n"
 
 convertsecs() {
- ((h=$1/3600))
- ((m=($1%3600)/60))
- printf "%dh %02dm\n" $h $m
+ h=$(($1/3600))
+ m=$((($1%3600)/60))
+ printf "%dh %02dm\\n" $h $m
 }
 
-function print_header {
-	printf "%-10s %10s %10s %s\n" "Date" "Duration" "InTime" "OutTime"
+print_header() {
+	printf "%-10s %10s %10s %10s\\n" "Date" "Duration" "InTime" "OutTime"
 }
 
 #applydate - date of punch
 #duration - time in seconds
 #in_datetime - date --date @${in_datetime} (without last 2 0s for datetime)
-function print_row {
-	printf "%10s %10s %10s %s\n" "$1" "$2" "$3" "$4"
+print_row() {
+	printf "%10s %10s %10s %10s\\n" "$1" "$2" "$3" "$4"
 }
 
-function parse_row {
-	while read data; do
-		#TODO(ryan) is echo needed?
-		applydate=`echo "$data" | jq -r '.applydate'`;
-		duration=`echo "$data" | jq -r '.duration'`;
-		duration=`convertsecs "$duration"`
-		intime=`echo "$data" | jq -r '.intime' | sed 's/\(.*\).../\1/'`;
-		intime=`date --date @${intime}`
-		outtime=`echo "$data" | jq -r '.outtime' | sed 's/\(.*\).../\1/'`;
-		outtime=`date --date @${outtime}`
-		print_row "$applydate" "$duration" "$intime" "$outtime"
+parse_row() {
+	while read -r data; do
+		applydate=$(echo "$data" | jq -r '.applydate');
+		duration=$(echo "$data" | jq -r '.duration');
+		duration=$(convertsecs "$duration");
+		intime=$(echo "$data" | jq -r '.intime' | sed 's/\(.*\).../\1/');
+		intime=$(date --date "@${intime}" +%l:%M);
+		outtime=$(echo "$data" | jq -r '.outtime' | sed 's/\(.*\).../\1/');
+		outtime=$(date --date "@${outtime}" +%l:%M);
+		print_row "$applydate" "$duration" "$intime" "$outtime";
 	done
 }
 
-`wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S  --method POST \
+`wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S --method POST \
 	--header 'cache-control: no-cache' \
 	- "https://fastapps.rit.edu/kronosTimecard/login?username=${USERNAME}&password=${PASSWORD}" 2>&1`
 
-employeeid=`wget --load-cookies cookies.txt -qO- \
+employeeid=$(wget --load-cookies cookies.txt -qO- \
 	"https://fastapps.rit.edu/kronosTimecard/rest/employeebyusername/${USERNAME}" \
-	| jq -r '.list[0].employeeid'`
+	| jq -r '.list[0].employeeid')
 
 print_header
 
+# range to grab
+today=$(date +%F)
+last_week=$(date --date="1 week ago" +%F)
+
 wget --load-cookies cookies.txt -qO- \
-	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/2018-09-28/2018-10-11" \
+	"https://fastapps.rit.edu/kronosTimecard/rest/timecard/${employeeid}/${last_week}/${today}" \
 	| jq --compact-output '.punchlist[] | {applydate: .applydate, duration: .duration, intime: .in_datetime, outtime: .out_datetime}' | parse_row
 
+rm cookies.txt
 
