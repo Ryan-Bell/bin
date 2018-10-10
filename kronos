@@ -1,12 +1,11 @@
 #!/bin/sh
 # depends on jq
-# TODO(ryan) handle incorrect login
-# TODO(ryan) no such file bug
 # TODO(ryan) totals for days option?
-# TODO(ryan) usage function
 
 usage(){
-	echo "TODO here"
+	printf '%s\n' "usage: kronos [[-u username] | -h ]"
+	printf '%s\n\t%s\n' "-u, --username" "Optionally pass in username"
+	printf '%s\n\t%s\n' "-h, --help" "Show this help and exit"
 }
 
 while [ "$1" != "" ]; do
@@ -38,9 +37,9 @@ stty echo
 printf "\\n"
 
 convertsecs() {
- h=$(($1/3600))
- m=$((($1%3600)/60))
- printf "%dh %02dm\\n" $h $m
+ hour=$(($1/3600))
+ minute=$((($1%3600)/60))
+ printf "%dh %02dm\\n" $hour $minute
 }
 
 print_header() {
@@ -67,9 +66,16 @@ parse_row() {
 	done
 }
 
-`wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S --method POST \
+response=$(wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S --method POST \
 	--header 'cache-control: no-cache' \
-	- "https://fastapps.rit.edu/kronosTimecard/login?username=${USERNAME}&password=${PASSWORD}" 2>&1`
+	- "https://fastapps.rit.edu/kronosTimecard/login?username=${USERNAME}&password=${PASSWORD}" 2>&1)
+
+# check for login error TODO(ryan) this seems fudgy
+error=$(echo "$response" | grep 'login?error')
+if [ "$error" != "" ]; then
+	echo "Could not login - maybe wrong username or password?"
+	exit 1
+fi
 
 employeeid=$(wget --load-cookies cookies.txt -qO- \
 	"https://fastapps.rit.edu/kronosTimecard/rest/employeebyusername/${USERNAME}" \
