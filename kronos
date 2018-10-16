@@ -5,6 +5,8 @@
 usage(){
 	printf '%s\n' "usage: kronos [[-u username] | -h ]"
 	printf '%s\n\t%s\n' "-u, --username" "Optionally pass in username"
+	printf '%s\n\t%s\n' "-td, --total_day" "Will show the total hours for the day"
+	printf '%s\n\t%s\n' "-tw, --total_week" "Will show the total hours for the week"
 	printf '%s\n\t%s\n' "-h, --help" "Show this help and exit"
 }
 
@@ -12,6 +14,12 @@ while [ "$1" != "" ]; do
 	case $1 in
 		-u | --username ) shift
 			USERNAME=$1
+			;;
+		-td | --total_day )
+			TOTAL_DAY=true
+			;;
+		-tw | --total_week )
+			TOTAL_WEEK=true
 			;;
 		-h | --help )
 			usage
@@ -37,18 +45,51 @@ stty echo
 printf "\\n"
 
 convertsecs() {
- hour=$(($1/3600))
- minute=$((($1%3600)/60))
- printf "%dh %02dm\\n" $hour $minute
+	hour=$(($1/3600))
+	minute=$((($1%3600)/60))
+	printf "%dh %02dm\\n" $hour $minute
+}
+
+week_total=0
+day_total=0
+# TODO(ryan) don't just pick an old date, use since start of pay period
+last_used_date=$(date --date="1 week ago" +%F)
+
+# applydate duration_raw intime
+update_hour_totals() {
+	#convert to seconds for compare
+	last_date_secs=$(date -d "$last_used_date" +%s)
+	row_date_secs=$(date -d "$1" +%s)
+	if [ "$row_date_secs" -gt "$last_date_secs" ]; then
+		# not on the same day anymore,	reset the day
+		day_total=0
+		last_used_date="$1"
+	fi
+	if [ "$2" -le 0 ]; then
+		# currently clocked in so use intime
+		curr_time=$(date +%s)
+		set -- "$1" $((curr_time-"$3")) "$3"
+	fi
+	day_total=$(($day_total+"$2"))
+	week_total=$(($week_total+"$2"))
 }
 
 print_header() {
 	printf "%-10s %10s %10s %10s\\n" "Date" "Duration" "InTime" "OutTime"
 }
 
-#applydate - date of punch
-#duration - time in seconds
-#in_datetime - date --date @${in_datetime} (without last 2 0s for datetime)
+print_footer() {
+	if [ "$TOTAL_WEEK" = true ]; then
+		printf '%s ' "Total for week:"
+		convertsecs "$week_total"
+	fi
+
+	if [ "$TOTAL_DAY" = true ]; then
+		printf '%s ' "Total for day:"
+		convertsecs "$day_total"
+	fi
+}
+
 print_row() {
 	printf "%10s %10s %10s %10s\\n" "$1" "$2" "$3" "$4"
 }
@@ -56,14 +97,16 @@ print_row() {
 parse_row() {
 	while read -r data; do
 		applydate=$(echo "$data" | jq -r '.applydate');
-		duration=$(echo "$data" | jq -r '.duration');
-		duration=$(convertsecs "$duration");
-		intime=$(echo "$data" | jq -r '.intime' | sed 's/\(.*\).../\1/');
-		intime=$(date --date "@${intime}" +%l:%M);
+		duration_raw=$(echo "$data" | jq -r '.duration');
+		duration=$(convertsecs "$duration_raw");
+		intime_raw=$(echo "$data" | jq -r '.intime' | sed 's/\(.*\).../\1/');
+		intime=$(date --date "@${intime_raw}" +%l:%M);
 		outtime=$(echo "$data" | jq -r '.outtime' | sed 's/\(.*\).../\1/');
 		outtime=$(date --date "@${outtime}" +%l:%M);
+		update_hour_totals "$applydate" "$duration_raw" "$intime_raw"
 		print_row "$applydate" "$duration" "$intime" "$outtime";
 	done
+	print_footer
 }
 
 response=$(wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S --method POST \
