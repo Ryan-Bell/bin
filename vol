@@ -16,4 +16,4 @@ current_vol="$(amixer sget Master | grep -o -E "[[:digit:]]+%")"
 
 # The '-r' flag is from a patched version of 'libnotify'.
 # '-r' lets you replace notifications using the same id.
-notify-send  -r 112 "Volume: ${current_vol/$'\n'*}"
+notify-send --urgency=low -r 112 "Volume: ${current_vol/$'\n'*}"
