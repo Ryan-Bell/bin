@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 # Adjusted to just use the background image since pixelating takes time
 
-icon="$HOME/Pictures/lock.png"
-current_wallpaper="$(< ~/.cache/wal/wal)"
+#icon="$HOME/Pictures/lock.png"
+#current_wallpaper="$(< ~/.cache/wal/wal)"
 lock_image="$HOME/Pictures/lock_image.png"
 
-convert "$current_wallpaper" "$icon" -gravity center -composite -matte "$lock_image"
+#convert "$current_wallpaper" "$icon" -gravity center -composite -matte "$lock_image"
 /usr/bin/i3lock -u -t -i "$lock_image"
 
-i3lockpid=$!
-sleep 0.5
+#i3lockpid=$!
+#sleep 0.5
 
-winid=`xwininfo -name "i3lock" | grep "Window id" | grep -oE "0x[0-9a-f]+"`
-if [ -z "$winid" ]
-then
-    echo "Could not find i3lock window"
-    exit 1
-fi
+#winid=`xwininfo -name "i3lock" | grep "Window id" | grep -oE "0x[0-9a-f]+"`
+#if [ -z "$winid" ]
+#then
+    #echo "Could not find i3lock window"
+    #exit 1
+#fi
 
-conky -w "$winid" &
-conkypid=$!
+#conky -w "$winid" &
+#conkypid=$!
 
-wait $i3lockpid
-kill $conkypid
+#wait $i3lockpid
+#kill $conkypid
 
 

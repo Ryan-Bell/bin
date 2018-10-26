@@ -12,7 +12,10 @@ class myHandler(BaseHTTPRequestHandler):
                 self.end_headers()
 
                 post_body = post_body.replace("'", "\\'").replace('"', '\\"')
-                cmd = 'notify-send "%s"' % post_body
+                if post_body.startswith("Limited"):
+                    cmd = 'notify-send --urgency=low "%s"' % post_body
+                else:
+                    cmd = 'notify-send "%s"' % post_body
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
                 p_status = p.wait()
                 (output, err) = p.communicate()
