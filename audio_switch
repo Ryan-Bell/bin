@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 #
 # Summary: Toggles audio output between headphones and HDMI (for receiver)
 #
@@ -10,7 +10,7 @@
 current_profile_0_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+' || exit 1)"
 
 # toggle two cards based on current setting (only works if other card is disabled)
-if [[ "$current_profile_0_setting" = off ]]; then
+if [ "$current_profile_0_setting" = off ]; then
 	# enable hdmi 7.1 (receiver/speakers)
 	pactl set-card-profile 0 output:hdmi-surround71-extra1
 	pactl set-card-profile 1 off
@@ -20,6 +20,5 @@ else
 	pactl set-card-profile 0 off
 fi
 
-echo -n "Changing output from $current_profile_0_setting "
-current_profile_0_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+')"
-echo "to $current_profile_0_setting"
+new_profile_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+')"
+echo "Changing output from $current_profile_0_setting to $new_profile_setting"
