@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 #
 # Summary: Take a screenshot and display a notification.
 #
@@ -8,11 +8,11 @@
 
 # Screenshot directory
 scr_dir="${HOME}/Pictures/Screenshots"
-mkdir -p "$scr_dir" || { printf "%s\n" "Error: Couldn't create screenshot directory"; exit; }
+mkdir -p "$scr_dir" || { printf "%s\\n" "Error: Couldn't create screenshot directory"; exit; }
 
 # Use printf to store the current date/time as variables.
-printf -v date "%(%F)T"
-printf -v time "%(%I-%M-%S)T"
+date=$(printf "%(%F)T")
+time=$(printf "%(%I-%M-%S)T")
 
 # Create current date format.
 mkdir -p "${scr_dir}/${date}"
@@ -22,6 +22,6 @@ scr="${scr_dir}/${date}/${date}-${time}.png"
 
 # The '-r' flag is from a patched version of 'libnotify'.
 # '-r' lets you replace notifications using the same id.
-notify-send -r 111 "Saved screenshot as ${scr/*\/}"
+notify-send "Saved screenshot as $( basename "$scr" )"
 
 import -window root -gravity north "$scr"

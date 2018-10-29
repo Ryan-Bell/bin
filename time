@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 #
 # Summary: Display the time
 #
 
-notify-send --urgency=low "`date +%I:%M`"
+notify-send --urgency=low "$(date +%I:%M)"

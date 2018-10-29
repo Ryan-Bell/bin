@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 #
 # Summary: Change pulseaudio volume and send a notification.
 #
@@ -9,11 +9,11 @@ case "$1" in
     "up")   amixer -q sset Master 1%+ ;;
     "down") amixer -q sset Master 1%- ;;
     "mute") amixer -q sset Master toggle ;;
-    *) printf "%s\n" "Usage: ./vol up, ./vol down"; exit ;;
+    *) printf "%s\\n" "Usage: ./vol up, ./vol down"; exit ;;
 esac
 
 current_vol="$(amixer sget Master | grep -o -E "[[:digit:]]+%")"
 
 # The '-r' flag is from a patched version of 'libnotify'.
 # '-r' lets you replace notifications using the same id.
-notify-send --urgency=low -r 112 "Volume: ${current_vol/$'\n'*}"
+notify-send --urgency=low -r 112 "Volume: $current_vol"
