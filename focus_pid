@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# Returns the PID of the application in window with focus
+# Summary: (WIP) Returns the PID of the application in window with focus
 
 # Get window ID
 ID=$(xdpyinfo | grep focus | cut -f4 -d " ")

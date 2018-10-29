@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Simple script to toggle github remote to/from https/git.
+# Summary: Simple script to toggle github remote to/from https/git.
+# Summary: From dylanaraps/bin
 
 repo_remote="$(git remote get-url origin || exit 1)"
 

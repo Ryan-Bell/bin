@@ -1,4 +1,6 @@
 #!/bin/bash
+# Summary: changes mute switch on applications
+# Depends: PulseAudio
 
 main() {
     local action=toggle

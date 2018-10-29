@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Display the battery level 
+# Summary: Displays the battery level with acpi
 #
 
 # The '-r' flag is from a patched version of 'libnotify'.

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Change pulseaudio volume and send a notification.
+# Summary: Change pulseaudio volume and send a notification.
 #
-# Created by Dylan Araps.
+# Summary: Created by Dylan Araps.
 #
 # Depends on: amixer, libnotify (patched with id support)
 case "$1" in

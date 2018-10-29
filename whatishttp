@@ -1,6 +1,6 @@
 #!/bin/sh
-# idea from github.com/coldsauce/whatishttp
-# adapted to shell
+# Summary: Shows what HTTP codes mean
+# Summary: from coldsauce/whatishttp adapted to shell
 
 usage(){
 	printf "usage: whatishttp HTTP_CODE\\n"

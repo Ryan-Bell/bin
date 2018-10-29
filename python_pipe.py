@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Summary: receieves notifications from plexpy and creates dunst notifications based on user
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import subprocess
 

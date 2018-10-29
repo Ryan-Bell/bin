@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# Toggles audio output between headphones and HDMI (for receiver)
+# Summary: Toggles audio output between headphones and HDMI (for receiver)
 #
 # Created by Ryan Bell
 #
-# Depends on: PulseAudio
+# Depends: PulseAudio
 
 # Get the active profile of the first card or exit
 current_profile_0_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+' || exit 1)"

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Summary: i3-lock script that just shows a simple image
+# Depends: i3lock
 # Adjusted to just use the background image since pixelating takes time
 
 #icon="$HOME/Pictures/lock.png"

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# Take a screenshot and display a notification.
+# Summary: Take a screenshot and display a notification.
 #
-# Created by Dylan Araps.
+# Summary: Created by Dylan Araps.
 #
-# Depends on: imagemagick, libnotify (patched with id support)
+# Depends: imagemagick, libnotify (patched with id support)
 
 # Screenshot directory
 scr_dir="${HOME}/Pictures/Screenshots"

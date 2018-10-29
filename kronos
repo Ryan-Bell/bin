@@ -1,6 +1,9 @@
 #!/bin/sh
-# depends on jq
+# Summary: Shows kronos timecard related information
+# Depends: jq
 # TODO(ryan) totals for days option?
+# TODO(ryan) simple flag that just outputs whether clocked in or not?
+#			^ what do with credentials tho...
 
 usage(){
 	printf '%s\n' "usage: kronos [[-u username] | -h ]"

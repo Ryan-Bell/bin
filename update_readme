@@ -1,7 +1,6 @@
 #!/bin/sh
 # Generates the repo readme based on descriptions in the scripts
 
-#audio_switch bat focus_pid grt hub kronos lock mute plex_notify.sh python_pipe.py scr sustart t time update_readme vol whatishttp wrap
 #TODO(ryan) can this be done with grep and exclude=?
 #TODO(ryan) summary is matched on this file at grep line
 
@@ -25,8 +24,13 @@ for script in ~/bin/*; do
 		echo "SKIP $script_filename"
 	else
 		# Not in exclude list extract header information and append to readme
+		# Only continue if there is a summary
+		grep -q "Summary:" "$script" || continue
+
+		# Print script filename as header
 		echo "### $script_filename  " >> README.md
-		grep "Summary:" "$script" | sed "s/^.*:\\ //" >> README.md
+		# Print summary and append spaces at end for line break
+		echo "$(grep "Summary:" "$script" | sed "s/^.*:\\ //")  " >> README.md
 	fi
 done
 printf "%`tput cols`s"|tr ' ' '-'
