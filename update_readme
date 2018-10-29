@@ -1,0 +1,33 @@
+#!/bin/sh
+# Generates the repo readme based on descriptions in the scripts
+
+#audio_switch bat focus_pid grt hub kronos lock mute plex_notify.sh python_pipe.py scr sustart t time update_readme vol whatishttp wrap
+#TODO(ryan) can this be done with grep and exclude=?
+#TODO(ryan) summary is matched on this file at grep line
+
+exclude_list=("hub" "t" "README" "update_readme")
+
+containsElement () {
+	local e match="$1"
+	shift
+	for e; do [[ "$e" == "$match" ]] && return 0; done
+	return 1
+}
+
+# README description
+echo "A collection of scripts I use  " > README.md
+
+for script in ~/bin/*; do
+	[ -e "$script" ] || continue
+	script_extension=".${script##*.}"
+	script_filename=$(basename "$script" "$script_extension")
+	if containsElement "$script_filename" "${exclude_list[@]}"; then
+		echo "SKIP $script_filename"
+	else
+		# Not in exclude list extract header information and append to readme
+		echo "### $script_filename  " >> README.md
+		grep "Summary:" "$script" | sed "s/^.*:\\ //" >> README.md
+	fi
+done
+printf "%`tput cols`s"|tr ' ' '-'
+cat README.md
