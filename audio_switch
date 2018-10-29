@@ -20,5 +20,5 @@ else
 	pactl set-card-profile 0 off
 fi
 
-new_profile_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+')"
-echo "Changing output from $current_profile_0_setting to $new_profile_setting"
+new_profile_0_setting="$(pacmd list-cards | grep -m1 active\ profile | grep -oP '\<\K[^>]+')"
+notify-send --urgency=low "Changing output from $current_profile_0_setting to $new_profile_0_setting"
