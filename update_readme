@@ -4,7 +4,7 @@
 #TODO(ryan) can this be done with grep and exclude=?
 #TODO(ryan) summary is matched on this file at grep line
 
-exclude_list=("hub" "t" "README" "update_readme")
+exclude_list=("hub" "README" "update_readme")
 
 containsElement () {
 	local e match="$1"

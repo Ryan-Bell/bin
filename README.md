@@ -6,8 +6,7 @@ Displays the battery level with acpi
 ### focus_pid  
 (WIP) Returns the PID of the application in window with focus  
 ### grt  
-Simple script to toggle github remote to/from https/git.
-From dylanaraps/bin  
+Simple script to toggle github remote to/from https/git.  
 ### kronos  
 Shows kronos timecard related information  
 ### lock  
@@ -22,6 +21,9 @@ receieves notifications from plexpy and creates dunst notifications based on use
 ### scr  
 Take a screenshot and display a notification.
 Created by Dylan Araps.  
+### t  
+A simple task tracking utility
+based on Steve Losh's t  
 ### time  
 Display the time  
 ### vol  
