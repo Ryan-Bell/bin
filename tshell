@@ -9,7 +9,6 @@ usage(){
 	printf '%s\n\t%s\n' "-e, --edit" "edit TASK to contain TEXT"
 	printf '%s\n\t%s\n' "-f, --finish" "mark TASK as finished"
 
-
 	printf '%s\n' "Config Options:"
 	printf '%s\n\t%s\n' "-l, --list" "work on LIST"
 	printf '%s\n\t%s\n' "-t, --task-dir" "work on the lists in DIR"
@@ -20,6 +19,8 @@ usage(){
 	printf '%s\n\t%s\n' "-q, --quiet" "print less detailed output"
 	printf '%s\n\t%s\n' "-d, --done" "list done tasks instead of unfinished ones"
 }
+
+[ -z "$1" ] && usage && exit 1
 
 while [ "$1" != "" ]; do
 	case $1 in
@@ -50,10 +51,59 @@ while [ "$1" != "" ]; do
 		-d | --done ) shift
 			done=$1
 			;;
-		* )
+		-h | --help ) shift
 			usage
-			exit 1
+			exit 0
+			;;
+		* )
+			text="'$*'"
+			break
 	esac
 	shift
 done
+
+# use defaults if needed
+[ -z "$list" ] && list="tasks"
+[ -z "$taskdir" ] && taskdir=~/.tasks/
+
+# ID=45nl2nfwe2lkenf235wef FINISHED=true TEXT=asd kjlla lsvaw gavagg
+
+remove_task() {
+	newtasklist=$(sed "/ID=$remove/d" "$taskdir$list")
+	echo "$newtasklist" > "$taskdir$list"
+}
+
+edit_task() {
+	# remove task then add task
+	exit 1
+}
+
+finish_task() {
+	# grep the id and mark finished field
+	exit 1
+}
+
+add_task() {
+	# genereate hash and insert line
+	# needs to check for illegal text that would mess up the parser
+	# should this check if there is a dup tasks already there?
+	#TODO(ryan) handle directory not existing?
+	id=$(echo "$text" | sha256sum | sed 's/\ .*//')
+	echo "ID=$id FINISHED=false TEXT=$text" >> "$taskdir$list"
+}
+
+print_list() {
+	exit 1
+}
+
+if [ ! -z "$remove" ]; then
+	remove_task
+elif [ ! -z "$edit" ]; then
+	edit_task
+elif [ ! -z "$finish" ]; then
+	finish_task
+elif [ ! -z "$text" ]; then
+	add_task
+fi
+#TODO(ryan) add base usage of just printing out the tasks
 
