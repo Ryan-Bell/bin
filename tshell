@@ -1,5 +1,6 @@
 #!/bin/sh
 # Summary: A simple task tracking utility
+# Summary: based on Steve Losh's t
 #alias t='python ~/bin/t --task-dir ~/.tasks --list tasks'
 
 usage(){
@@ -19,8 +20,6 @@ usage(){
 	printf '%s\n\t%s\n' "-q, --quiet" "print less detailed output"
 	printf '%s\n\t%s\n' "-d, --done" "list done tasks instead of unfinished ones"
 }
-
-[ -z "$1" ] && usage && exit 1
 
 while [ "$1" != "" ]; do
 	case $1 in
@@ -66,8 +65,7 @@ done
 [ -z "$list" ] && list="tasks"
 [ -z "$taskdir" ] && taskdir=~/.tasks/
 
-# ID=45nl2nfwe2lkenf235wef FINISHED=true TEXT=asd kjlla lsvaw gavagg
-
+# ID=45nl2nfwe2lkenf235wef FINISHED=true TEXT='asd kjlla lsvaw gavagg'
 remove_task() {
 	newtasklist=$(sed "/ID=$remove/d" "$taskdir$list")
 	echo "$newtasklist" > "$taskdir$list"
@@ -93,7 +91,8 @@ add_task() {
 }
 
 print_list() {
-	exit 1
+	#TODO(ryan) this doesn't check finished/not-finished
+	cat "$taskdir$list" | sed "s/ID=\([^\ ]\{3\}\).*TEXT='\(.*\)'/\1 - \2/"
 }
 
 if [ ! -z "$remove" ]; then
@@ -104,6 +103,8 @@ elif [ ! -z "$finish" ]; then
 	finish_task
 elif [ ! -z "$text" ]; then
 	add_task
+else
+	print_list
 fi
 #TODO(ryan) add base usage of just printing out the tasks
 
