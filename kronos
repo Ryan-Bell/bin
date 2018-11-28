@@ -24,6 +24,9 @@ while [ "$1" != "" ]; do
 		-tw | --total_week )
 			TOTAL_WEEK=true
 			;;
+		-si | --show_info )
+			SHOW_INFO=true
+			;;
 		-h | --help )
 			usage
 			exit
@@ -73,8 +76,8 @@ update_hour_totals() {
 		curr_time=$(date +%s)
 		set -- "$1" $((curr_time-"$3")) "$3"
 	fi
-	day_total=$(($day_total+"$2"))
-	week_total=$(($week_total+"$2"))
+	day_total=$((day_total+"$2"))
+	week_total=$((week_total+"$2"))
 }
 
 print_header() {
@@ -112,6 +115,26 @@ parse_row() {
 	print_footer
 }
 
+print_info_row() {
+	printf "%s %10s %10s %10s %10s %10s\\n" "Name" "" "Wage" "Badge" "Period Start" "Period End"
+	printf "%s %10s %10s %10s %10s %10s\\n\\n" "$1" "$2" "$3" "$4" "$5" "$6"
+}
+
+parse_info() {
+	while read -r data; do
+		empid=$( echo "$data" | jq -r '.empid');
+		firstname=$( echo "$data" | jq -r '.firstname');
+		lastname=$( echo "$data" | jq -r '.lastname');
+		wage=$( echo "$data" | jq -r '.wage');
+		badge=$( echo "$data" | jq -r '.badge');
+		ppstart=$( echo "$data" | jq -r '.payp_start');
+		ppend=$( echo "$data" | jq -r '.payp_end');
+		if [ "$SHOW_INFO" = true ]; then
+			print_info_row "$firstname" "$lastname" "$wage" "$badge" "$ppstart" "$ppend"
+		fi
+	done
+}
+
 response=$(wget --save-cookies cookies.txt --keep-session-cookies --delete-after --quiet -S --method POST \
 	--header 'cache-control: no-cache' \
 	- "https://fastapps.rit.edu/kronosTimecard/login?username=${USERNAME}&password=${PASSWORD}" 2>&1)
@@ -123,9 +146,13 @@ if [ "$error" != "" ]; then
 	exit 1
 fi
 
-employeeid=$(wget --load-cookies cookies.txt -qO- \
+overview_info=$(wget --load-cookies cookies.txt -qO- \
 	"https://fastapps.rit.edu/kronosTimecard/rest/employeebyusername/${USERNAME}" \
-	| jq -r '.list[0].employeeid')
+	| jq --compact-output '.list[0] | {empid: .employeeid, firstname: .firstname, lastname: .lastname, wage: .basewagerate, badge: .badgenum, payp_start: .payperiods[0].start_date, payp_end: .payperiods[0].end_date}')
+
+echo "$overview_info" | parse_info
+
+employeeid=$(echo "$overview_info" | jq -r '.empid')
 
 print_header
 
