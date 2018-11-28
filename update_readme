@@ -3,6 +3,7 @@
 
 #TODO(ryan) can this be done with grep and exclude=?
 #TODO(ryan) summary is matched on this file at grep line
+#TODO(ryan) multiple summary lines aren't being split in markdown
 
 exclude_list=("hub" "README" "update_readme")
 
