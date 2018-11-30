@@ -106,5 +106,3 @@ elif [ ! -z "$text" ]; then
 else
 	print_list
 fi
-#TODO(ryan) add base usage of just printing out the tasks
-
