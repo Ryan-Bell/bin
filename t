@@ -92,7 +92,7 @@ add_task() {
 
 print_list() {
 	#TODO(ryan) this doesn't check finished/not-finished
-	cat "$taskdir$list" | sed "s/ID=\([^\ ]\{3\}\).*TEXT='\(.*\)'/\1 - \2/"
+	cat "$taskdir$list" | sed "s/ID=\([^\ ]\{3\}\).*FINISHED=false\ TEXT='\(.*\)'/\1 - \2/"
 }
 
 if [ ! -z "$remove" ]; then
