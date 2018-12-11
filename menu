@@ -1,0 +1,14 @@
+#!/bin/sh
+
+res=$(echo -e "lock\nrestart\nshutdown" | rofi -dmenu)
+
+if [ $res = "lock" ]; then
+  ~/bin/lock
+fi
+if [ $res = "restart" ]; then
+    reboot
+fi
+if [ $res = "shutdown" ]; then
+    poweroff
+fi
+exit 0
