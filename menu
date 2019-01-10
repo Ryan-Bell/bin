@@ -1,9 +1,12 @@
 #!/bin/sh
 
-res=$(echo -e "lock\nrestart\nshutdown" | rofi -dmenu)
+res=$(echo -e "lock\nexit\nrestart\nshutdown" | rofi -dmenu)
 
 if [ $res = "lock" ]; then
   ~/bin/lock
+fi
+if [ $res = "exit" ]; then
+  i3-msg exit
 fi
 if [ $res = "restart" ]; then
     reboot
