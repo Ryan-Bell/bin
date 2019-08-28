@@ -1,4 +1,0 @@
-input=$1
-filename="${input%.*}"
-mkdir "$filename"
-mv "$1" "$filename"

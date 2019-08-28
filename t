@@ -2,6 +2,8 @@
 # Summary: A simple task tracking utility
 # Summary: based on Steve Losh's t
 #alias t='python ~/bin/t --task-dir ~/.tasks --list tasks'
+# TODO: running t without a list should not print error
+#   prompt to create a list
 
 usage(){
 	printf '%s\n' "usage: t [-t DIR] [-l LIST] [options] [TEXT]"
