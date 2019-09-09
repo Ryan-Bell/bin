@@ -1,0 +1,20 @@
+# This file runs when starting interactive mode
+# the whole point here is to change the location of python's history file
+# which can't be disabled and has no env variable to set it's location
+import atexit
+import os
+import readline
+
+histfile = os.path.join(os.path.expanduser("~"), ".cache", ".python_history")
+try:
+    readline.read_history_file(histfile)
+    readline.set_history_length(1000)
+except FileNotFoundError:
+    # add an item into history so the default history file won't be created in home dir
+    # see https://bugs.python.org/issue20886
+    # see https://github.com/python/cpython/blob/v3.7.0b5/Lib/site.py#L436
+    open(histfile, 'wb').close()
+    readline.add_history('history')
+    pass
+
+atexit.register(readline.write_history_file, histfile)
