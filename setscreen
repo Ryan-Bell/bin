@@ -1,0 +1,47 @@
+#!/bin/bash
+#TODO tests by overriding xrandr to cat test files to test different situations
+#TODO more documentation and usage info
+
+# ensure the required commands are installed
+#TODO should support for cvt be added? cvt is mentioned in the xrandr man page
+command -v xrandr >/dev/null 2>&1 || { echo >&2 "xrandr is required but isn't found. Aborting."; exit 1; }
+command -v gtf >/dev/null 2>&1 || { echo >&2 "gtf is required but isn't found. Aborting."; exit 1; }
+
+# check that an arg was passed
+if [[ -z "$@" ]];
+then
+  #TODO print out help
+  echo "An argument is needed to run this script";
+  exit 1;
+fi
+
+width="$1"
+height="$2"
+if [ -z "$width" ] || [ -z "$height" ]; then
+  #TODO print help after error
+  echo "width and height are required for this script";
+  exit 1;
+fi
+
+display=$(xrandr | grep -Po '.+(?=\sconnected)')
+if [ "$(echo "$display" | wc -l)" -ne 1 ]; then
+  #TODO print help?
+  echo "multiple screens are connected but no screen was specified";
+  exit 1;
+fi
+
+modename="${width}x${height}"
+
+# grab xrandr modename incase refresh rate is in name
+xrandrmode=$(xrandr | grep -o -E "${modename}\w*" | head -n 1)
+if [[ -z "$xrandrmode" ]]; then
+  # create the mode (using 60 as a default refresh rate)
+  echo "creating new mode $modename";
+  #TODO should refresh be an option?
+  newmode="$modename $(gtf "$width" "$height" 60 | grep -oP '(?<="\s\s).+')";
+  xrandr --newmode $newmode;
+  xrandr --addmode "$display" "$modename";
+  xrandrmode="$modename";
+fi
+
+xrandr --output "$display" --mode "$xrandrmode";
