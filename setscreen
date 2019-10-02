@@ -1,6 +1,14 @@
 #!/bin/bash
+
+#NOTE these exports need to be set for udev rule to work
+# /etc/udev/rules.d/vmware.rules:
+#   ACTION=="add" ATTRS{idVendor}=="2109", ATTRS{idProduct}=="0100", RUN+="/home/mainuser/bin/setscreen 2560 1080"
+#   ACTION=="remove" ATTRS{idVendor}=="2109", ATTRS{idProduct}=="0100", RUN+="/home/mainuser/bin/setscreen 1920 1080"
+export DISPLAY=:0
+export XAUTHORITY=/home/mainuser/.Xauthority
 #TODO tests by overriding xrandr to cat test files to test different situations
-#TODO more documentation and usage info
+#TODO add documentation and usage info
+#TODO support selecting a screen
 
 # ensure the required commands are installed
 #TODO should support for cvt be added? cvt is mentioned in the xrandr man page
