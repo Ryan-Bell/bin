@@ -93,6 +93,12 @@ add_task() {
 }
 
 print_list() {
+  if [ ! -f "$taskdir$list" ]; then
+    mkdir -p "$taskdir"
+    touch "$taskdir$list"
+    echo "Created empty task list"
+    return 0
+  fi
 	#TODO(ryan) this doesn't check finished/not-finished
 	cat "$taskdir$list" | sed "s/ID=\([^\ ]\{3\}\).*FINISHED=false\ TEXT='\(.*\)'/\1 - \2/"
 }
